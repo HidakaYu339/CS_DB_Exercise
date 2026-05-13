@@ -96,4 +96,22 @@ public class EmployeeAccessor
         return employee;
 
     }
+
+    /// <summary>
+    /// 演習-16 演習-16 データの有無を確認する
+    /// </summary>
+    /// <param name="name">社員名</param>
+    /// <returns>検索結果</returns>
+    public List<EmployeeEntity>? FindByNameContainsJoinDepartment(string name)
+    {
+        var employees = _context.Employees
+            .Include(e => e.Department)
+            .Where(e => e.Name!.Contains(name))
+            .ToList();
+        if (employees.Count == 0)
+        {
+            return null!;
+        }
+        return employees!;
+    }
 }

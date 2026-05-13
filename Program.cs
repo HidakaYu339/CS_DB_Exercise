@@ -1,6 +1,8 @@
-﻿using CS_DB_Exercise.Infrastructures.Accessors;
-using CS_DB_Exercise.Infrastructures.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+
+using CS_DB_Exercise.Infrastructures.Accessors;
 using CS_DB_Exercise.Infrastructures;
+using CS_DB_Exercise.Infrastructures.Entities;
 
 namespace CS_DB_Exercise;
 
@@ -11,54 +13,35 @@ class Program
         // 演習用DbContextを生成する
         var context = new AppDbContext();
 
-        // EmployeeおよびDepartmentテーブルアクセスクラスを生成する
+        // employeeテーブルにアクセスするクラスのインスタンスを生成する
         var employeeAccessor = new EmployeeAccessor(context);
-        // var departmentAccessor = new DepartmentAccessor(context);
 
-        // 演習-11 employeeテーブルの社員を削除する
-        Exercise11(employeeAccessor);
+        // 演習-16 データの有無を確認する
+        Exercise16(employeeAccessor);
     }
 
     /// <summary>
-    /// 演習-11 employeeテーブルの社員を削除する
+    /// 演習-16 データの有無を確認する
     /// </summary>
     /// <param name="employeeAccessor">Employeeテーブルアクセスクラス</param>
-    /// <returns></returns>
-    private static void Exercise11(EmployeeAccessor employeeAccessor)
+    private static void Exercise16(EmployeeAccessor employeeAccessor)
     {
-
-        Console.Write("社員Idを入力してください->");
-        var empId = int.Parse(Console.ReadLine()!);
-
-        Console.WriteLine("演習-11 指定された社員Idの社員を削除する\r\n");
-        // 指定された社員Idの社員を削除する
-        var result = employeeAccessor.DeleteByld(empId);
-        // 削除結果がnullの場合は該当社員が存在しないため削除できなかった旨を表示する
-        if (result == null)
+        Console.Write("社員名を入力してください->");
+        var name = Console.ReadLine();
+        // 入力された社員名を含む社員とその所属部署を取得する
+        var results = employeeAccessor.FindByNameContainsJoinDepartment(name!);
+        // 取得した結果がnullの場合は、該当する社員が存在しない旨を表示する
+        if (results == null)
         {
-            Console.WriteLine($"社員Id:{empId}の社員は存在しないため削除できませんでした");
-            return;
-        }
-        Console.WriteLine($"社員Id:{empId}の社員を削除しました");
-    }
-    static void Exercise13(EmployeeAccessor accessor)
-    {
-        Console.Write("部署Idを入力してください->");
-        var deptId = int.Parse(Console.ReadLine()!);
-        var employees = accessor.FindByDeptId(deptId);
-
-        Console.WriteLine("演習-07 employeeテーブルから部署Idで該当社員を取得する");
-        if (employees != null)
-        {
-            foreach (var employee in employees)
-            {
-                Console.WriteLine(employee);
-            }
+            Console.WriteLine($"{name}さんは、存在しません。");
         }
         else
         {
-            Console.WriteLine($"部署Id:{deptId}の社員は存在しません");
+            // 取得した結果をループで回して、社員名と所属部署名を表示する
+            foreach (var result in results)
+            {
+                Console.WriteLine($"{name}さんは、{result.Department!.Name}に所属する社員です。");
+            }
         }
-        return;
     }
 }
