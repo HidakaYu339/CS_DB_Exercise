@@ -14,8 +14,14 @@ public class EmployeeEntity
     [Column("dept_id")]
     public int DeptId { get; set; }     // 部署Id（外部キー）
 
+    /// <summary>
+    /// 演習-12 employeeテーブルとdepartmentテーブルを結合可能にする
+    /// 所属部署
+    /// </summary>
+    [ForeignKey("DeptId")]
+    public DepartmentEntity? Department { get; set; }
     public override string ToString()
     {
-        return $"従業員Id:{Id} , 従業員名:{Name} , 部署Id:{DeptId}";
+        return $"社員Id:{Id} , 社員名:{Name} , 部署Id:{DeptId}";
     }
 }

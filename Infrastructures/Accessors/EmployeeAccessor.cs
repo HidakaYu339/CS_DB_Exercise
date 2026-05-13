@@ -1,5 +1,6 @@
 using CS_DB_Exercise.Infrastructures;
 using CS_DB_Exercise.Infrastructures.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace CS_DB_Exercise.Infrastructures.Accessors;
 /// <summary>
@@ -85,4 +86,14 @@ public class EmployeeAccessor
         return delResult.Entity;
     }
 
+    public EmployeeEntity? FindByNameJoinDepartment(string name)
+    {
+
+        var employee = _context.Employees
+        .Include(e => e.Department)
+        .Where(e => e.Name == name)
+        .Single();
+        return employee;
+
+    }
 }
