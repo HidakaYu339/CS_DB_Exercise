@@ -13,41 +13,40 @@ class Program
 
         // EmployeeおよびDepartmentテーブルアクセスクラスを生成する
         var employeeAccessor = new EmployeeAccessor(context);
-        var departmentAccessor = new DepartmentAccessor(context);
+        // var departmentAccessor = new DepartmentAccessor(context);
 
-        // 演習-09 employeeテーブルに新しい社員を追加する
-        Exercise09(employeeAccessor, departmentAccessor);
+        // 演習-10 employeeテーブルの社員名を変更する
+        Exercise10(employeeAccessor);
     }
 
     /// <summary>
-    /// 演習-09 employeeテーブルに新しい社員を追加する
+    /// 演習-10 employeeテーブルの社員名を変更する
     /// </summary>
     /// <param name="employeeAccessor">Employeeテーブルアクセスクラス</param>
-    /// <param name="departmentAccessor">Departmentテーブルアクセスクラス</param>
-    static void Exercise09(EmployeeAccessor employeeAccessor, DepartmentAccessor departmentAccessor)
+    /// <returns></returns>
+    private static void Exercise10(EmployeeAccessor employeeAccessor)
     {
+        Console.Write("社員Idを入力してください->");
+        var empId = int.Parse(Console.ReadLine()!);
         Console.Write("社員名を入力してください->");
         var name = Console.ReadLine();
-        Console.Write("部署Idを入力してください->");
-        var deptId = int.Parse(Console.ReadLine()!);
 
-        Console.WriteLine("演習-09 employeeテーブルに新しい社員の情報を登録する");
-        // 入力された部署Idが存在するか確認する
-        if (departmentAccessor.FindById(deptId) == null)
+        Console.WriteLine("演習-10 指定された社員Idの社員名を変更する");
+        // 変更後の社員情報を作成する
+        var updateEployee = new EmployeeEntity
         {
-            Console.WriteLine($"部署Id:{deptId}は存在しないため、社員登録できません");
-            return;
-        }
-
-        // 登録する社員エンティティを生成する
-        var newEployee = new EmployeeEntity
-        {
+            Id = empId,
             Name = name,
-            DeptId = deptId
         };
 
-        // employeeテーブルに新しい社員を追加する
-        employeeAccessor.Create(newEployee);
-        Console.WriteLine($"社員名:{name}、部署Id:{deptId}の社員を登録しました");
+        // 社員情報を更新する
+        var result = employeeAccessor.UpdateById(updateEployee);
+        // 更新結果がnullの場合は、指定された社員Idの社員が存在しないため、変更できなかったことを表示する
+        if (result == null)
+        {
+            Console.WriteLine($"社員Id:{empId}の社員は存在しないため変更できませんでした");
+            return;
+        }
+        Console.WriteLine($"社員名:を{result.Name}に変更しました");
     }
 }
