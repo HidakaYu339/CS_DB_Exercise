@@ -70,4 +70,19 @@ public class EmployeeAccessor
         return employee;
     }
 
+    public EmployeeEntity DeleteByld(int id)
+    {
+        var result = _context.Employees.Find(id);
+        if (result == null)
+        {
+            return null;
+        }
+
+        // 商品を削除する
+        var delResult = _context.Employees.Remove(result);
+        // 削除を永続化する
+        _context.SaveChanges();
+        return delResult.Entity;
+    }
+
 }
