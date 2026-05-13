@@ -1,5 +1,6 @@
 ﻿using CS_DB_Exercise.Infrastructures.Accessors;
 using CS_DB_Exercise.Infrastructures;
+using CS_DB_Exercise.Infrastructures.Entities; // 追加
 
 namespace CS_DB_Exercise;
 
@@ -10,108 +11,43 @@ class Program
         // 演習用DbContextを生成する
         var context = new AppDbContext();
 
-        // DepartmentAccessorを生成する
-        //var departmentAccessor = new DepartmentAccessor(context);
-
-        // 演習-05 すべての部署を取得する
-        // Exercise05(departmentAccessor);
-
-        // 演習-06 departmentテーブルから主キー値で部署を取得する
-        // Departmentテーブルアクセスクラスを生成する
-        // Exercise06(departmentAccessor);
-
-        // Employeeテーブルアクセスクラスを生成する
+        // EmployeeおよびDepartmentテーブルアクセスクラスを生成する
         var employeeAccessor = new EmployeeAccessor(context);
-        // 演習-07 employeeテーブルから部署Idで該当社員を取得する
-        // Exercise07(employeeAccessor);
-        // 演習-08 employeeテーブルから社員名の部分一致検索で該当社員を取得する
-        Exercise08(employeeAccessor);
+        var departmentAccessor = new DepartmentAccessor(context);
+
+        // 演習-09 employeeテーブルに新しい社員を追加する
+        Exercise09(employeeAccessor, departmentAccessor);
     }
 
     /// <summary>
-    /// 演習-05 すべての部署を取得する
+    /// 演習-09 employeeテーブルに新しい社員を追加する
     /// </summary>
-    /// <param name="departmentAccessor">DepartmentAccessorのインスタンス</param>
-    static void Exercise05(DepartmentAccessor departmentAccessor)
+    /// <param name="employeeAccessor">Employeeテーブルアクセスクラス</param>
+    /// <param name="departmentAccessor">Departmentテーブルアクセスクラス</param>
+    static void Exercise09(EmployeeAccessor employeeAccessor, DepartmentAccessor departmentAccessor)
     {
-        // FindAll()メソッドを使用して、すべての部署を取得する
-        var departments = departmentAccessor.FindAll();
-        // 取得した部署をコンソールに表示する
-        foreach (var department in departments)
-        {
-            Console.WriteLine(department);
-        }
-    }
-
-    /// <summary>
-    /// 演習-06 departmentテーブルから主キー値で部署を取得する
-    /// </summary>
-    /// <param name="accessor">DepartmentAccessorのインスタンス</param>
-    static void Exercise06(DepartmentAccessor accessor)
-    {
+        Console.Write("社員名を入力してください->");
+        var name = Console.ReadLine();
         Console.Write("部署Idを入力してください->");
         var deptId = int.Parse(Console.ReadLine()!);
-        var department = accessor.FindById(deptId);
 
-        Console.WriteLine("演習-06 departmentテーブルから主キー値で部署を取得する");
-        if (department != null)
+        Console.WriteLine("演習-09 employeeテーブルに新しい社員の情報を登録する");
+        // 入力された部署Idが存在するか確認する
+        if (departmentAccessor.FindById(deptId) == null)
         {
-            Console.WriteLine(department);
+            Console.WriteLine($"部署Id:{deptId}は存在しないため、社員登録できません");
+            return;
         }
-        else
-        {
-            Console.WriteLine($"部署Id:{deptId}の部署は存在しません");
-        }
-        return;
-    }
 
-    /// <summary>
-    /// 演習-07 employeeテーブルから部署Idで該当社員を取得する
-    /// </summary>
-    /// <param name="accessor">EmployeeAccessorのインスタンス</param>
-    static void Exercise07(EmployeeAccessor accessor)
-    {
-        Console.Write("部署Idを入力してください->");
-        var deptId = int.Parse(Console.ReadLine()!);
-        var employees = accessor.FindByDeptId(deptId);
+        // 登録する社員エンティティを生成する
+        var newEployee = new EmployeeEntity
+        {
+            Name = name,
+            DeptId = deptId
+        };
 
-        Console.WriteLine("演習-07 employeeテーブルから部署Idで該当社員を取得する");
-        if (employees != null)
-        {
-            foreach (var employee in employees)
-            {
-                Console.WriteLine(employee);
-            }
-        }
-        else
-        {
-            Console.WriteLine($"部署Id:{deptId}の社員は存在しません");
-        }
-        return;
-    }
-
-    /// <summary>
-    /// 演習-08 employeeテーブルから社員名の部分一致検索で該当社員を取得する
-    /// </summary>
-    /// <param name="accessor">EmployeeAccessorのインスタンス</param>
-    static void Exercise08(EmployeeAccessor accessor)
-    {
-        Console.Write("キーワードを入力してください->");
-        var keyword = Console.ReadLine()!;
-        var employees = accessor.FindByContainsName(keyword);
-
-        Console.WriteLine("演習-08 employeeテーブルから社員名の部分一致検索で該当社員を取得する");
-        if (employees != null)
-        {
-            foreach (var employee in employees)
-            {
-                Console.WriteLine(employee);
-            }
-        }
-        else
-        {
-            Console.WriteLine($"キーワード:{keyword}が含まれる社員は存在しません");
-        }
-        return;
+        // employeeテーブルに新しい社員を追加する
+        employeeAccessor.Create(newEployee);
+        Console.WriteLine($"社員名:{name}、部署Id:{deptId}の社員を登録しました");
     }
 }
